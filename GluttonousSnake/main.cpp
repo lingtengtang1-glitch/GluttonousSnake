@@ -17,15 +17,11 @@ using namespace std;
 #define COLOR_BEGINBUTTON_TEXT RGB(255,255,255)
 #define BEGINBUTTON_TEXT_H 80
 
-void initial()
+void DrawBeginningButton(bool hovered)
 {
-    initgraph(WINDOW_W, WINDOW_H);
-    setbkcolor(COLOR_BG);
-    cleardevice();
-
-    setfillcolor(COLOR_BEGINBUTTON_UNCLICK);
+    setfillcolor(hovered ? COLOR_BEGINBUTTON_CLICK : COLOR_BEGINBUTTON_UNCLICK);
     fillroundrect(BEGINBUTTON_X1, BEGINBUTTON_Y1, BEGINBUTTON_X2, BEGINBUTTON_Y2,
-        BEGINBUTTON_RX, BEGINBUTTON_RY);
+                  BEGINBUTTON_RX, BEGINBUTTON_RY);
 
     settextstyle(BEGINBUTTON_TEXT_H, 0, _T("Consolas"));
     settextcolor(COLOR_BEGINBUTTON_TEXT);
@@ -36,7 +32,15 @@ void initial()
     int Text_X = (BEGINBUTTON_X1 + BEGINBUTTON_X2 - tw) / 2;
     int Text_Y = (BEGINBUTTON_Y1 + BEGINBUTTON_Y2 - th) / 2;
     outtextxy(Text_X, Text_Y, _T("START"));
+}
 
+void Initial()
+{
+    initgraph(WINDOW_W, WINDOW_H);
+    setbkcolor(COLOR_BG);
+    cleardevice();
+
+    DrawBeginningButton(false);
 
     ExMessage msg;
     bool Correct_Click = false;
@@ -48,7 +52,7 @@ void initial()
             int Mouse_X = msg.x;
             int Mouse_Y = msg.y;
             bool inside = Mouse_X >= BEGINBUTTON_X1 && Mouse_X <= BEGINBUTTON_X2 &&
-                Mouse_Y >= BEGINBUTTON_Y1 && Mouse_Y <= BEGINBUTTON_Y2;
+                          Mouse_Y >= BEGINBUTTON_Y1 && Mouse_Y <= BEGINBUTTON_Y2;
 
             if (msg.message == WM_LBUTTONDOWN)
             {
@@ -60,19 +64,7 @@ void initial()
             else if (inside != Correct_Click)
             {
                 Correct_Click = inside;
-                setfillcolor(Correct_Click ? COLOR_BEGINBUTTON_CLICK : COLOR_BEGINBUTTON_UNCLICK);
-                fillroundrect(BEGINBUTTON_X1, BEGINBUTTON_Y1, BEGINBUTTON_X2, BEGINBUTTON_Y2,
-                    BEGINBUTTON_RX, BEGINBUTTON_RY);
-
-                settextstyle(BEGINBUTTON_TEXT_H, 0, _T("Consolas"));
-                settextcolor(COLOR_BEGINBUTTON_TEXT);
-                setbkmode(TRANSPARENT);
-
-                int Text_W = textwidth(_T("START"));
-                int Text_H = textheight(_T("START"));
-                int Text_X = (BEGINBUTTON_X1 + BEGINBUTTON_X2 - Text_W) / 2;
-                int Text_Y = (BEGINBUTTON_Y1 + BEGINBUTTON_Y2 - Text_H) / 2;
-                outtextxy(Text_X, Text_Y, _T("START"));
+                DrawBeginningButton(Correct_Click);
             }
         }
     }
@@ -82,6 +74,6 @@ void initial()
 
 int main()
 {
-	initial();
+    Initial();
     return 0;
 }
