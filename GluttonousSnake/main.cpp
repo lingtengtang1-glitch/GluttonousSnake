@@ -1,39 +1,9 @@
-#include <graphics.h>
+#include "RelevantData.h"
+#include "Draw.h"
 #include <iostream>
 using namespace std;
 
-// Window properties
-#define WINDOW_W 800
-#define WINDOW_H 600
-#define COLOR_BG RGB(255,255,255)
-
-// Title properties
-#define COLOR_TITLE RGB(25,55,109)
-#define TITLE_TEXT_H 100
-#define TITLE_Y 50
-
-// Button properties
-#define COLOR_BUTTON_UNCLICK RGB(25,55,109)
-#define COLOR_BUTTON_CLICK RGB(70,130,180)
-#define BUTTON_RX 50
-#define BUTTON_RY 50
-#define COLOR_BUTTON_TEXT RGB(255,255,255)
-
-// Beginning button properties
-#define BEGINBUTTON_X1 250
-#define BEGINBUTTON_Y1 300
-#define BEGINBUTTON_X2 550
-#define BEGINBUTTON_Y2 400
-#define BEGINBUTTON_TEXT_H 80
-
-// Exit button properties
-#define EXITBUTTON_X1 280
-#define EXITBUTTON_Y1 410
-#define EXITBUTTON_X2 520
-#define EXITBUTTON_Y2 490
-#define EXITBUTTON_TEXT_H 60
-
-void DrawTitle()
+static void DrawTitle()
 {
     settextstyle(TITLE_TEXT_H, 0, _T("Impact"));
     settextcolor(COLOR_TITLE);
@@ -46,38 +16,28 @@ void DrawTitle()
     outtextxy(Text_X, Text_Y, _T("Gluttonous Snake"));
 }
 
-void DrawBeginningButton(bool hovered)
+static void DrawBeginningButton(bool hovered)
 {
-    setfillcolor(hovered ? COLOR_BUTTON_CLICK : COLOR_BUTTON_UNCLICK);
-    fillroundrect(BEGINBUTTON_X1, BEGINBUTTON_Y1, BEGINBUTTON_X2, BEGINBUTTON_Y2,
-                  BUTTON_RX, BUTTON_RY);
-
-    settextstyle(BEGINBUTTON_TEXT_H, 0, _T("Consolas"));
-    settextcolor(COLOR_BUTTON_TEXT);
-    setbkmode(TRANSPARENT);
-
-    int tw = textwidth(_T("START"));
-    int th = textheight(_T("START"));
-    int Text_X = (BEGINBUTTON_X1 + BEGINBUTTON_X2 - tw) / 2;
-    int Text_Y = (BEGINBUTTON_Y1 + BEGINBUTTON_Y2 - th) / 2;
-    outtextxy(Text_X, Text_Y, _T("START"));
+    if (hovered)
+        DrawButton(BEGINBUTTON_X1, BEGINBUTTON_Y1, BEGINBUTTON_X2, BEGINBUTTON_Y2,
+            BUTTON_RX, BUTTON_RY, _T("START"), COLOR_BUTTON_CLICK,
+            COLOR_BUTTON_TEXT, _T("Consolas"), BEGINBUTTON_TEXT_H);
+    else
+        DrawButton(BEGINBUTTON_X1, BEGINBUTTON_Y1, BEGINBUTTON_X2, BEGINBUTTON_Y2,
+            BUTTON_RX, BUTTON_RY, _T("START"), COLOR_BUTTON_UNCLICK,
+            COLOR_BUTTON_TEXT, _T("Consolas"), BEGINBUTTON_TEXT_H);
 }
 
-void DrawExitButton(bool hovered)
+static void DrawExitButton(bool hovered)
 {
-    setfillcolor(hovered ? COLOR_BUTTON_CLICK : COLOR_BUTTON_UNCLICK);
-    fillroundrect(EXITBUTTON_X1, EXITBUTTON_Y1, EXITBUTTON_X2, EXITBUTTON_Y2,
-        BUTTON_RX, BUTTON_RY);
-
-    settextstyle(EXITBUTTON_TEXT_H, 0, _T("Consolas"));
-    settextcolor(COLOR_BUTTON_TEXT);
-    setbkmode(TRANSPARENT);
-
-    int tw = textwidth(_T("EXIT"));
-    int th = textheight(_T("EXIT"));
-    int Text_X = (EXITBUTTON_X1 + EXITBUTTON_X2 - tw) / 2;
-    int Text_Y = (EXITBUTTON_Y1 + EXITBUTTON_Y2 - th) / 2;
-    outtextxy(Text_X, Text_Y, _T("EXIT"));
+    if (hovered)
+        DrawButton(EXITBUTTON_X1, EXITBUTTON_Y1, EXITBUTTON_X2, EXITBUTTON_Y2,
+            BUTTON_RX, BUTTON_RY, _T("EXIT"), COLOR_BUTTON_CLICK,
+            COLOR_BUTTON_TEXT, _T("Consolas"), EXITBUTTON_TEXT_H);
+    else
+        DrawButton(EXITBUTTON_X1, EXITBUTTON_Y1, EXITBUTTON_X2, EXITBUTTON_Y2,
+            BUTTON_RX, BUTTON_RY, _T("EXIT"), COLOR_BUTTON_UNCLICK,
+            COLOR_BUTTON_TEXT, _T("Consolas"), EXITBUTTON_TEXT_H);
 }
 
 void Initial()
@@ -114,7 +74,10 @@ void Initial()
             {
                 Correct_Click = inside_beginbutton;
             }
-            DrawBeginningButton(Correct_Click);
+
+            DrawBeginningButton(inside_beginbutton);
+
+
 
             bool inside_exitbutton = Mouse_X >= EXITBUTTON_X1 && Mouse_X <= EXITBUTTON_X2 &&
                 Mouse_Y >= EXITBUTTON_Y1 && Mouse_Y <= EXITBUTTON_Y2;
@@ -130,7 +93,9 @@ void Initial()
             {
                 Correct_Click = inside_exitbutton;
             }
-            DrawExitButton(Correct_Click);
+
+            DrawExitButton(inside_exitbutton);
+            
         }
     }
 
