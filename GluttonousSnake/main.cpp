@@ -48,10 +48,10 @@ void MouseClickEvent(ExMessage msg)
             if (Game.Mouse_X >= CONTINUEBUTTON_X1 && Game.Mouse_X <= CONTINUEBUTTON_X2 &&
                 Game.Mouse_Y >= CONTINUEBUTTON_Y1 && Game.Mouse_Y <= CONTINUEBUTTON_Y2)
             {
-                Game.currentScreen = GAME;
+                Game.currentScreen = GAMEOVER;
             }
-            else if (Game.Mouse_X >= RESTARTBUTTON_X1 && Game.Mouse_X <= RESTARTBUTTON_X2 &&
-                Game.Mouse_Y >= RESTARTBUTTON_Y1 && Game.Mouse_Y <= RESTARTBUTTON_Y2)
+            else if (Game.Mouse_X >= RESTARTBUTTON_PAUSE_X1 && Game.Mouse_X <= RESTARTBUTTON_PAUSE_X2 &&
+                Game.Mouse_Y >= RESTARTBUTTON_PAUSE_Y1 && Game.Mouse_Y <= RESTARTBUTTON_PAUSE_Y2)
             {
                 Game.currentScreen = GAME;
             }
@@ -60,7 +60,17 @@ void MouseClickEvent(ExMessage msg)
             {
                 Game.currentScreen = INITIALMENU;
             }
-            
+        case GAMEOVER:
+            if (Game.Mouse_X >= RESTARTBUTTON_GAMEOVER_X1 && Game.Mouse_X <= RESTARTBUTTON_GAMEOVER_X2 &&
+                Game.Mouse_Y >= RESTARTBUTTON_GAMEOVER_Y1 && Game.Mouse_Y <= RESTARTBUTTON_GAMEOVER_Y2)
+            {
+                Game.currentScreen = GAME;
+            }
+            else if (Game.Mouse_X >= EXITBUTTON_GAMEOVER_X1 && Game.Mouse_X <= EXITBUTTON_GAMEOVER_X2 &&
+                Game.Mouse_Y >= EXITBUTTON_GAMEOVER_Y1 && Game.Mouse_Y <= EXITBUTTON_GAMEOVER_Y2)
+            {
+                Game.currentScreen = INITIALMENU;
+			}
     }
 }
 
@@ -113,16 +123,16 @@ static void DrawContinueButton(bool hovered)
             COLOR_BUTTON_TEXT, _T("Consolas"), CONTINUEBUTTON_TEXT_H);
 }
 
-static void DrawRestartButton(bool hovered)
+static void DrawRestartButto_PausePage(bool hovered)
 {
     if (hovered)
-        DrawButton(RESTARTBUTTON_X1, RESTARTBUTTON_Y1, RESTARTBUTTON_X2, RESTARTBUTTON_Y2,
+        DrawButton(RESTARTBUTTON_PAUSE_X1, RESTARTBUTTON_PAUSE_Y1, RESTARTBUTTON_PAUSE_X2, RESTARTBUTTON_PAUSE_Y2,
             BUTTON_RX, BUTTON_RY, _T("RESTART"), COLOR_BUTTON_CLICK,
-            COLOR_BUTTON_TEXT, _T("Consolas"), RESTARTBUTTON_TEXT_H);
+            COLOR_BUTTON_TEXT, _T("Consolas"), RESTARTBUTTON_PAUSE_TEXT_H);
     else
-        DrawButton(RESTARTBUTTON_X1, RESTARTBUTTON_Y1, RESTARTBUTTON_X2, RESTARTBUTTON_Y2,
+        DrawButton(RESTARTBUTTON_PAUSE_X1, RESTARTBUTTON_PAUSE_Y1, RESTARTBUTTON_PAUSE_X2, RESTARTBUTTON_PAUSE_Y2,
             BUTTON_RX, BUTTON_RY, _T("RESTART"), COLOR_BUTTON_UNCLICK,
-            COLOR_BUTTON_TEXT, _T("Consolas"), RESTARTBUTTON_TEXT_H);
+            COLOR_BUTTON_TEXT, _T("Consolas"), RESTARTBUTTON_PAUSE_TEXT_H);
 }
 
 static void DrawExitButton_PausePage(bool hovered)
@@ -135,6 +145,30 @@ static void DrawExitButton_PausePage(bool hovered)
         DrawButton(EXITBUTTON_PAUSE_X1, EXITBUTTON_PAUSE_Y1, EXITBUTTON_PAUSE_X2, EXITBUTTON_PAUSE_Y2,
             BUTTON_RX, BUTTON_RY, _T("EXIT"), COLOR_BUTTON_UNCLICK,
             COLOR_BUTTON_TEXT, _T("Consolas"), EXITBUTTON_PAUSE_TEXT_H);
+}
+
+static void DrawRestartButton_GameOver(bool hovered)
+{
+    if (hovered)
+        DrawButton(RESTARTBUTTON_GAMEOVER_X1, RESTARTBUTTON_GAMEOVER_Y1, RESTARTBUTTON_GAMEOVER_X2, RESTARTBUTTON_GAMEOVER_Y2,
+            BUTTON_RX, BUTTON_RY, _T("RESTART"), COLOR_BUTTON_CLICK,
+            COLOR_BUTTON_TEXT, _T("Consolas"), RESTARTBUTTON_GAMEOVER_TEXT_H);
+    else
+        DrawButton(RESTARTBUTTON_GAMEOVER_X1, RESTARTBUTTON_GAMEOVER_Y1, RESTARTBUTTON_GAMEOVER_X2, RESTARTBUTTON_GAMEOVER_Y2,
+            BUTTON_RX, BUTTON_RY, _T("RESTART"), COLOR_BUTTON_UNCLICK,
+            COLOR_BUTTON_TEXT, _T("Consolas"), RESTARTBUTTON_GAMEOVER_TEXT_H);
+}
+
+static void DrawExitButton_GameOver(bool hovered)
+{
+    if (hovered)
+        DrawButton(EXITBUTTON_GAMEOVER_X1, EXITBUTTON_GAMEOVER_Y1, EXITBUTTON_GAMEOVER_X2, EXITBUTTON_GAMEOVER_Y2,
+            BUTTON_RX, BUTTON_RY, _T("EXIT"), COLOR_BUTTON_CLICK,
+            COLOR_BUTTON_TEXT, _T("Consolas"), EXITBUTTON_GAMEOVER_TEXT_H);
+    else
+        DrawButton(EXITBUTTON_GAMEOVER_X1, EXITBUTTON_GAMEOVER_Y1, EXITBUTTON_GAMEOVER_X2, EXITBUTTON_GAMEOVER_Y2,
+            BUTTON_RX, BUTTON_RY, _T("EXIT"), COLOR_BUTTON_UNCLICK,
+            COLOR_BUTTON_TEXT, _T("Consolas"), EXITBUTTON_GAMEOVER_TEXT_H);
 }
 
 void DrawInitialMenu()
@@ -154,8 +188,26 @@ void DrawGame()
 
 }
 
+static void DrawScore_GameOverPage()
+{
+    settextstyle(SCORE_TEXT_H, 0, _T("Consolas"));
+	int tx = (WINDOW_W - textwidth(_T("Score: 0"))) / 2;
+    int ty = 200;
+	DrawText(tx, ty, _T("Score: 0"), COLOR_SCORE_TEXT, _T("Consolas"), SCORE_TEXT_H);
+
+}
+
+
 void DrawGameOver()
 {
+	DrawTitle(_T("Game Over"));
+	bool inside_restartbutton = Game.Mouse_X >= RESTARTBUTTON_GAMEOVER_X1 && Game.Mouse_X <= RESTARTBUTTON_GAMEOVER_X2 &&
+		Game.Mouse_Y >= RESTARTBUTTON_GAMEOVER_Y1 && Game.Mouse_Y <= RESTARTBUTTON_GAMEOVER_Y2;
+	DrawRestartButton_GameOver(inside_restartbutton);
+	bool inside_exitbutton = Game.Mouse_X >= EXITBUTTON_GAMEOVER_X1 && Game.Mouse_X <= EXITBUTTON_GAMEOVER_X2 &&
+		Game.Mouse_Y >= EXITBUTTON_GAMEOVER_Y1 && Game.Mouse_Y <= EXITBUTTON_GAMEOVER_Y2;
+	DrawExitButton_GameOver(inside_exitbutton);
+	DrawScore_GameOverPage();
 
 }
 
@@ -166,9 +218,9 @@ void DrawPausePage()
 		Game.Mouse_Y >= CONTINUEBUTTON_Y1 && Game.Mouse_Y <= CONTINUEBUTTON_Y2;
 	DrawContinueButton(inside_continuebutton);
 
-	bool inside_restartbutton = Game.Mouse_X >= RESTARTBUTTON_X1 && Game.Mouse_X <= RESTARTBUTTON_X2 &&
-		Game.Mouse_Y >= RESTARTBUTTON_Y1 && Game.Mouse_Y <= RESTARTBUTTON_Y2;
-	DrawRestartButton(inside_restartbutton);
+	bool inside_restartbutton = Game.Mouse_X >= RESTARTBUTTON_PAUSE_X1 && Game.Mouse_X <= RESTARTBUTTON_PAUSE_X2 &&
+		Game.Mouse_Y >= RESTARTBUTTON_PAUSE_Y1 && Game.Mouse_Y <= RESTARTBUTTON_PAUSE_Y2;
+	DrawRestartButto_PausePage(inside_restartbutton);
     
 	bool inside_exitbutton = Game.Mouse_X >= EXITBUTTON_PAUSE_X1 && Game.Mouse_X <= EXITBUTTON_PAUSE_X2 &&
 		Game.Mouse_Y >= EXITBUTTON_PAUSE_Y1 && Game.Mouse_Y <= EXITBUTTON_PAUSE_Y2;
@@ -198,7 +250,7 @@ int main()
             // DrawGame();
             break;
         case GAMEOVER:
-            // DrawGameOver();
+            DrawGameOver();
             break;
         case PAUSEPAGE:
             DrawPausePage();
