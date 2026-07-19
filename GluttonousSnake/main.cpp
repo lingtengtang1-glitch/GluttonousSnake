@@ -1,5 +1,6 @@
 #include "RelevantData.h"
 #include "Draw.h"
+#include "snake.h"
 #include <iostream>
 using namespace std;
 
@@ -22,6 +23,7 @@ struct AppState
 
     Screen currentScreen = INITIALMENU;
 }Game;
+Snake snake(400, 300, 1);
 
 void MouseClickEvent(ExMessage msg)
 {
@@ -185,6 +187,18 @@ void DrawInitialMenu()
 
 void DrawGame()
 {
+    cleardevice();
+    snake.Move();
+    for(int i = 0; i < snake.body.size(); ++i)
+    {
+        int x = snake.body[i].first.x;
+        int y = snake.body[i].first.y;
+        int direction = snake.body[i].second;
+        setfillcolor(RGB(0, 255, 0));
+        fillrectangle(x, y, x + 10, y + 10);
+	}
+    FlushBatchDraw();
+	Sleep(10); // Control the speed of the game loop
 
 }
 
@@ -247,7 +261,7 @@ int main()
             DrawInitialMenu();
             break;
         case GAME:
-            // DrawGame();
+            DrawGame();
             break;
         case GAMEOVER:
             DrawGameOver();

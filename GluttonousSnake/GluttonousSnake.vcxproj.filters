@@ -29,5 +29,8 @@
     <ClInclude Include="RelevantData.h">
       <Filter>头文件</Filter>
     </ClInclude>
+    <ClInclude Include="snake.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

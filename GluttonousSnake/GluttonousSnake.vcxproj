@@ -25,6 +25,7 @@
   <ItemGroup>
     <ClInclude Include="Draw.h" />
     <ClInclude Include="RelevantData.h" />
+    <ClInclude Include="snake.h" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>17.0</VCProjectVersion>
