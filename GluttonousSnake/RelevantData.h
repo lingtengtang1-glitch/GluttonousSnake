@@ -74,5 +74,7 @@
 #define COLOR_SCORE_TEXT RGB(0, 255, 0)
 #define SCORE_TEXT_H 30
 
+//=========================game page=================================
+#define BODYJOINT_LENGTH 25
 
 

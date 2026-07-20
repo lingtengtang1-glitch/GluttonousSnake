@@ -3,6 +3,7 @@
 #include <graphics.h>
 #include <iostream>
 #include <vector>
+#include "RelevantData.h"
 struct location
 {
 	int x;
@@ -18,24 +19,27 @@ public:
 	{
 		if (GetAsyncKeyState('W') & 0x8000)
 		{
-			direction = 0; // up
+			if(direction != 2)
+				direction = 0; // up
 		}
 		else if(GetAsyncKeyState('A') & 0x8000)
 		{
-			direction = 3; // left
+			if (direction != 1)
+				direction = 3; // left
 		}
 		else if (GetAsyncKeyState('S') & 0x8000)
 		{
-			direction = 2; // down
+			if (direction != 0)
+				direction = 2; // down
 		}
 		else if(GetAsyncKeyState('D') & 0x8000)
 		{
-			direction = 1; // right
+			if (direction != 3)
+				direction = 1; // right
 		}
 	}
 	void Move()
 	{
-		ChangeDirection();
 		for(int i = body.size() - 1; i > 0; --i)
 		{
 			body[i] = body[i - 1];
@@ -61,8 +65,30 @@ public:
 	{
 		return body.size();
 	}
+	void AddBodySegment()
+	{
+		int tmp_x = body.back().first.x;
+		int tmp_y = body.back().first.y;
+		int direct = body.back().second;
+		switch (direct)
+		{
+		case 0:
+			tmp_y += BODYJOINT_LENGTH;
+			break;
+		case 1:
+			tmp_x -= BODYJOINT_LENGTH;
+			break;
+		case 2:
+			tmp_y -= BODYJOINT_LENGTH;
+			break;
+		case 3:
+			tmp_x += BODYJOINT_LENGTH;
+			break;
+		}
+		body.push_back(std::make_pair(location{ tmp_x, tmp_y }, direct));
+	}
 	int direction = 0; // 0: up, 1: right, 2: down, 3: left
-	int speed = 1;
+	int speed = BODYJOINT_LENGTH;
 	int length = 1;
 	int head_x;
 	int head_y;

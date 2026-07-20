@@ -4,6 +4,8 @@
 #include <iostream>
 using namespace std;
 
+int Count = 0;
+
 enum Screen
 {
     INITIALMENU,
@@ -188,17 +190,37 @@ void DrawInitialMenu()
 void DrawGame()
 {
     cleardevice();
-    snake.Move();
+    if (Count == 0)
+    {
+		snake.AddBodySegment();
+    }
+	static DWORD lastMoveTime = GetTickCount();
+    DWORD currentTime = GetTickCount();
+
+    const int MOVE_INTERVAL = 150;
+
+    if (currentTime - lastMoveTime >= MOVE_INTERVAL)
+    {
+        snake.Move();
+		lastMoveTime = currentTime;
+    }
+    else
+    {
+		snake.ChangeDirection();
+    }
+
     for(int i = 0; i < snake.body.size(); ++i)
     {
+        cout << snake.body.size() << endl;
         int x = snake.body[i].first.x;
         int y = snake.body[i].first.y;
         int direction = snake.body[i].second;
         setfillcolor(RGB(0, 255, 0));
-        fillrectangle(x, y, x + 10, y + 10);
+        fillrectangle(x, y, x + BODYJOINT_LENGTH, y + BODYJOINT_LENGTH);
 	}
     FlushBatchDraw();
-	Sleep(10); // Control the speed of the game loop
+    Count = (Count + 1) % 1000;
+	Sleep(0); // Control the speed of the game loop
 
 }
 
