@@ -87,6 +87,19 @@ public:
 		}
 		body.push_back(std::make_pair(location{ tmp_x, tmp_y }, direct));
 	}
+
+	void Draw()
+	{
+		for (int i = 0; i < body.size(); ++i)
+		{
+			int x = body[i].first.x;
+			int y = body[i].first.y;
+			int direction = body[i].second;
+			setfillcolor(RGB(0, 255, 0));
+			fillrectangle(x, y, x + BODYJOINT_LENGTH, y + BODYJOINT_LENGTH);
+		}
+	}
+
 	int direction = 0; // 0: up, 1: right, 2: down, 3: left
 	int speed = BODYJOINT_LENGTH;
 	int length = 1;

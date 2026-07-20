@@ -24,6 +24,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Draw.h" />
+    <ClInclude Include="food.h" />
     <ClInclude Include="RelevantData.h" />
     <ClInclude Include="snake.h" />
   </ItemGroup>

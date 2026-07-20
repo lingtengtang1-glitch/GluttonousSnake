@@ -76,5 +76,8 @@
 
 //=========================game page=================================
 #define BODYJOINT_LENGTH 25
-
-
+#define MOVE_INTERVAL 150
+#define FOOD_SPAWN_INTERVAL 5000
+#define FOOD_COLOR RGB(255,0,0)
+#define FOOD_SIZE BODYJOINT_LENGTH
+#define INITIAL_LENGTH 5

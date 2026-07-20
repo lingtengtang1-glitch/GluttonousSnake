@@ -1,10 +1,14 @@
 #include "RelevantData.h"
 #include "Draw.h"
 #include "snake.h"
+#include "food.h"
 #include <iostream>
 using namespace std;
 
 int Count = 0;
+int Score = 0;
+
+vector<Food> SnakeFood;
 
 enum Screen
 {
@@ -25,7 +29,7 @@ struct AppState
 
     Screen currentScreen = INITIALMENU;
 }Game;
-Snake snake(400, 300, 1);
+Snake snake((400 / BODYJOINT_LENGTH) * BODYJOINT_LENGTH, (300 / BODYJOINT_LENGTH)* BODYJOINT_LENGTH, 1);
 
 void MouseClickEvent(ExMessage msg)
 {
@@ -187,21 +191,40 @@ void DrawInitialMenu()
     DrawExitButton(inside_exitbutton);
 }
 
+bool Check_FoodEaten()
+{
+    int x = snake.head_x;
+    int y = snake.head_y;
+    for (int i = SnakeFood.size() - 1; i >= 0; i--)
+    {
+        if (x == SnakeFood[i].x && y == SnakeFood[i].y)
+        {
+            SnakeFood.erase(SnakeFood.begin() + i);
+            return true;
+        }
+    }
+    return false;
+}
+
 void DrawGame()
 {
     cleardevice();
-    if (Count == 0)
-    {
-		snake.AddBodySegment();
-    }
 	static DWORD lastMoveTime = GetTickCount();
     DWORD currentTime = GetTickCount();
 
-    const int MOVE_INTERVAL = 150;
+    static Food tmp_food;
+    if (tmp_food.TrySpawn(snake.body))
+        SnakeFood.push_back(tmp_food);
+
 
     if (currentTime - lastMoveTime >= MOVE_INTERVAL)
     {
         snake.Move();
+        if (Check_FoodEaten())
+        {
+            snake.AddBodySegment();
+            Score++;
+        }
 		lastMoveTime = currentTime;
     }
     else
@@ -209,15 +232,13 @@ void DrawGame()
 		snake.ChangeDirection();
     }
 
-    for(int i = 0; i < snake.body.size(); ++i)
+    snake.Draw();
+
+    for (int i = 0; i < SnakeFood.size(); ++i)
     {
-        cout << snake.body.size() << endl;
-        int x = snake.body[i].first.x;
-        int y = snake.body[i].first.y;
-        int direction = snake.body[i].second;
-        setfillcolor(RGB(0, 255, 0));
-        fillrectangle(x, y, x + BODYJOINT_LENGTH, y + BODYJOINT_LENGTH);
-	}
+        SnakeFood[i].Draw();
+    }
+
     FlushBatchDraw();
     Count = (Count + 1) % 1000;
 	Sleep(0); // Control the speed of the game loop
@@ -266,6 +287,8 @@ void DrawPausePage()
 
 int main()
 {
+    for (int i = 0; i < INITIAL_LENGTH - 1; i++)
+        snake.AddBodySegment();
     initgraph(WINDOW_W, WINDOW_H);
     setbkcolor(COLOR_BG);
     cleardevice();
