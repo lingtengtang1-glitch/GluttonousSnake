@@ -73,6 +73,7 @@
 //Score Text properties
 #define COLOR_SCORE_TEXT RGB(0, 255, 0)
 #define SCORE_TEXT_H 30
+#define CONGRATULATION_H 50
 
 //=========================game page=================================
 #define BODYJOINT_LENGTH 25
@@ -81,3 +82,12 @@
 #define FOOD_COLOR RGB(255,0,0)
 #define FOOD_SIZE BODYJOINT_LENGTH
 #define INITIAL_LENGTH 5
+#define MAP_W 600
+#define MAP_H 600
+#define COLOR_MAP_EDGE RGB(255,255,255)
+
+#define SCORE_GAME_H 50
+#define COLOR_SCORE_GAME RGB(0,255,0)
+
+#define RECORD_GAME_H 50
+#define COLOR_RECORD_GAME RGB(255,0,0)

@@ -21,8 +21,8 @@ struct Food
 
         static std::random_device rd;
         static std::mt19937 gen(rd());
-        int cols = WINDOW_W / BODYJOINT_LENGTH;
-        int rows = WINDOW_H / BODYJOINT_LENGTH;
+        int cols = MAP_W / BODYJOINT_LENGTH;
+        int rows = MAP_H / BODYJOINT_LENGTH;
         std::uniform_int_distribution<> distX(0, cols - 1);
         std::uniform_int_distribution<> distY(0, rows - 1);
 

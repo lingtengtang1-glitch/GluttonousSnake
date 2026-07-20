@@ -3,10 +3,11 @@
 #include "snake.h"
 #include "food.h"
 #include <iostream>
+#include <fstream>
 using namespace std;
-
-int Count = 0;
 int Score = 0;
+int Record;
+bool BreakRecord = false;
 
 vector<Food> SnakeFood;
 
@@ -31,6 +32,23 @@ struct AppState
 }Game;
 Snake snake((400 / BODYJOINT_LENGTH) * BODYJOINT_LENGTH, (300 / BODYJOINT_LENGTH)* BODYJOINT_LENGTH, 1);
 
+Snake snake_initial;
+
+
+void Restart()
+{
+    if (BreakRecord)
+    {
+        Record = Score;
+        ofstream fout("Record.txt");
+        fout << Record;
+    }
+    snake = snake_initial;
+    Score = 0;
+    SnakeFood.clear();
+    BreakRecord = false;
+}
+
 void MouseClickEvent(ExMessage msg)
 {
     Game.Mouse_X = msg.x;
@@ -44,6 +62,7 @@ void MouseClickEvent(ExMessage msg)
             if (Game.Mouse_X >= BEGINBUTTON_X1 && Game.Mouse_X <= BEGINBUTTON_X2 &&
                 Game.Mouse_Y >= BEGINBUTTON_Y1 && Game.Mouse_Y <= BEGINBUTTON_Y2)
             {
+                Restart();
                 Game.currentScreen = GAME;
             }
             else if (Game.Mouse_X >= EXITBUTTON_X1 && Game.Mouse_X <= EXITBUTTON_X2 &&
@@ -56,11 +75,12 @@ void MouseClickEvent(ExMessage msg)
             if (Game.Mouse_X >= CONTINUEBUTTON_X1 && Game.Mouse_X <= CONTINUEBUTTON_X2 &&
                 Game.Mouse_Y >= CONTINUEBUTTON_Y1 && Game.Mouse_Y <= CONTINUEBUTTON_Y2)
             {
-                Game.currentScreen = GAMEOVER;
+                Game.currentScreen = GAME;
             }
             else if (Game.Mouse_X >= RESTARTBUTTON_PAUSE_X1 && Game.Mouse_X <= RESTARTBUTTON_PAUSE_X2 &&
                 Game.Mouse_Y >= RESTARTBUTTON_PAUSE_Y1 && Game.Mouse_Y <= RESTARTBUTTON_PAUSE_Y2)
             {
+                Restart();
                 Game.currentScreen = GAME;
             }
             else if (Game.Mouse_X >= EXITBUTTON_PAUSE_X1 && Game.Mouse_X <= EXITBUTTON_PAUSE_X2 &&
@@ -68,10 +88,12 @@ void MouseClickEvent(ExMessage msg)
             {
                 Game.currentScreen = INITIALMENU;
             }
+            break;
         case GAMEOVER:
             if (Game.Mouse_X >= RESTARTBUTTON_GAMEOVER_X1 && Game.Mouse_X <= RESTARTBUTTON_GAMEOVER_X2 &&
                 Game.Mouse_Y >= RESTARTBUTTON_GAMEOVER_Y1 && Game.Mouse_Y <= RESTARTBUTTON_GAMEOVER_Y2)
             {
+                Restart();
                 Game.currentScreen = GAME;
             }
             else if (Game.Mouse_X >= EXITBUTTON_GAMEOVER_X1 && Game.Mouse_X <= EXITBUTTON_GAMEOVER_X2 &&
@@ -79,6 +101,7 @@ void MouseClickEvent(ExMessage msg)
             {
                 Game.currentScreen = INITIALMENU;
 			}
+            break;
     }
 }
 
@@ -179,6 +202,21 @@ static void DrawExitButton_GameOver(bool hovered)
             COLOR_BUTTON_TEXT, _T("Consolas"), EXITBUTTON_GAMEOVER_TEXT_H);
 }
 
+bool JudgeIfGameOver()
+{
+    if (snake.head_x > MAP_W || snake.head_y > MAP_H || snake.head_x < 0 || snake.head_y < 0) return true;
+    for (int i = 1; i < snake.body.size(); i++)
+    {
+        if (snake.head_x == snake.body[i].first.x && snake.head_y == snake.body[i].first.y)
+        {
+            return true;
+        }
+    }
+    return false;
+}
+
+
+
 void DrawInitialMenu()
 {
     DrawTitle(_T("Gluttonous Snake"));
@@ -206,6 +244,35 @@ bool Check_FoodEaten()
     return false;
 }
 
+void DrawMap()
+{
+    setfillcolor(COLOR_MAP_EDGE);
+    setlinecolor(COLOR_BACKGROUND);
+    rectangle(0, 0, MAP_W, MAP_H);
+    setlinecolor(COLOR_MAP_EDGE);
+}
+
+static void DrawScore_GamePage()
+{
+    settextstyle(SCORE_GAME_H, 0, _T("impact"));
+    int tx = (WINDOW_W + MAP_W - textwidth(_T("Score:"))) / 2;
+    int ty = 30;
+    Draw_Text(tx, ty, _T("Score:"), COLOR_SCORE_GAME, _T("impact"), SCORE_GAME_H);
+
+    int tx_S = (WINDOW_W + MAP_W - textwidth(std::to_wstring(Score).c_str())) / 2;
+    int ty_S = ty + 40;
+    Draw_Text(tx_S,ty_S, std::to_wstring(Score).c_str(), COLOR_SCORE_GAME, _T("Consolas"), SCORE_GAME_H);
+
+    settextstyle(SCORE_GAME_H, 0, _T("impact"));
+    int tx_RT = (WINDOW_W + MAP_W - textwidth(_T("Record:"))) / 2;
+    int ty_RT = ty_S + 60;
+    Draw_Text(tx_RT, ty_RT, _T("Record:"), COLOR_RECORD_GAME, _T("impact"), RECORD_GAME_H);
+
+    int tx_RN = (WINDOW_W + MAP_W - textwidth(std::to_wstring(Record).c_str())) / 2;
+    int ty_RN = ty_RT + 40;
+    Draw_Text(tx_RN, ty_RN, std::to_wstring(Record).c_str(), COLOR_RECORD_GAME, _T("Consolas"), RECORD_GAME_H);
+}
+
 void DrawGame()
 {
     cleardevice();
@@ -215,6 +282,7 @@ void DrawGame()
     static Food tmp_food;
     if (tmp_food.TrySpawn(snake.body))
         SnakeFood.push_back(tmp_food);
+    
 
 
     if (currentTime - lastMoveTime >= MOVE_INTERVAL)
@@ -224,23 +292,32 @@ void DrawGame()
         {
             snake.AddBodySegment();
             Score++;
+            if (Score > Record && BreakRecord == false)
+            {
+                BreakRecord = true;
+            }
         }
 		lastMoveTime = currentTime;
+        if (JudgeIfGameOver())
+        {
+            Game.currentScreen = GAMEOVER;
+            return;
+        }
     }
     else
     {
 		snake.ChangeDirection();
     }
-
+    DrawScore_GamePage();
     snake.Draw();
 
     for (int i = 0; i < SnakeFood.size(); ++i)
     {
         SnakeFood[i].Draw();
     }
+    DrawMap();
 
     FlushBatchDraw();
-    Count = (Count + 1) % 1000;
 	Sleep(0); // Control the speed of the game loop
 
 }
@@ -248,9 +325,12 @@ void DrawGame()
 static void DrawScore_GameOverPage()
 {
     settextstyle(SCORE_TEXT_H, 0, _T("Consolas"));
-	int tx = (WINDOW_W - textwidth(_T("Score: 0"))) / 2;
+
+    std::wstring scoreStr = _T("Score: ") + std::to_wstring(Score);
+
+    int tx = (WINDOW_W - textwidth(scoreStr.c_str())) / 2;
     int ty = 200;
-	DrawText(tx, ty, _T("Score: 0"), COLOR_SCORE_TEXT, _T("Consolas"), SCORE_TEXT_H);
+    Draw_Text(tx, ty, scoreStr.c_str(), COLOR_SCORE_TEXT, _T("Consolas"), SCORE_TEXT_H);
 
 }
 
@@ -266,7 +346,29 @@ void DrawGameOver()
 	DrawExitButton_GameOver(inside_exitbutton);
 	DrawScore_GameOverPage();
 
+    if (BreakRecord)
+    {
+        wstring congrats = L"Congratulations! You break the record!";
+
+        settextstyle(CONGRATULATION_H, 0, _T("impact"));
+        int tw = textwidth(congrats.c_str());
+
+        int tx = (WINDOW_W - tw) / 2;
+        int ty = 140;
+
+        Draw_Text(tx, ty, congrats.c_str(), RED, L"impact", CONGRATULATION_H);
+    }
+
+    /*if (BreakRecord)
+    {
+        settextstyle(CONGRATULATION_H, 0, _T("impact"));
+        BreakRecord = false;
+        int tx = (WINDOW_W - textwidth(L"Congratulation! You break the record!")) / 2;
+        int ty = TITLE_Y + 50;
+        Draw_Text(tx, ty, L"Congratulation! You break the record!", RED, L"impact", TITLE_TEXT_H);
+    }*/
 }
+
 
 void DrawPausePage()
 {
@@ -287,8 +389,14 @@ void DrawPausePage()
 
 int main()
 {
+    ifstream fin("Record.txt");
+    fin >> Record;
+    fin.close();
+
     for (int i = 0; i < INITIAL_LENGTH - 1; i++)
         snake.AddBodySegment();
+
+    snake_initial = snake;
     initgraph(WINDOW_W, WINDOW_H);
     setbkcolor(COLOR_BG);
     cleardevice();
@@ -309,6 +417,13 @@ int main()
             DrawGame();
             break;
         case GAMEOVER:
+            if (BreakRecord)
+            {
+                ofstream fout("Record.txt");
+                Record = Score;
+                fout << Score;
+                fout.close();
+            }
             DrawGameOver();
             break;
         case PAUSEPAGE:

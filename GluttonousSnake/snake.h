@@ -12,6 +12,7 @@ struct location
 class Snake
 {
 public:
+	Snake(){}
 	Snake(int x, int y,int direct) : head_x(x), head_y(y){
 		body.push_back(std::make_pair(location{x, y}, direct));
 	}

@@ -23,7 +23,7 @@ void DrawButton(int x1, int y1, int x2, int y2, int rx, int ry, LPCTSTR Text, CO
 
 }
 
-void DrawText(int x, int y, LPCTSTR Text, COLORREF Color_Text, LPCTSTR Style, int Text_H)
+void Draw_Text(int x, int y, LPCTSTR Text, COLORREF Color_Text, LPCTSTR Style, int Text_H)
 {
 	settextstyle(Text_H, 0, Style);
 	settextcolor(Color_Text);
